@@ -1,5 +1,5 @@
 
-// app/gallery/page.tsx
+// Force runtime rendering so Blob calls run at request time (SSR), not during build
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
@@ -9,19 +9,11 @@ import Link from "next/link";
 import { list } from "@vercel/blob";
 
 export default async function Gallery() {
-  let images: Awaited<ReturnType<typeof list>>["blobs"] = [];
+  // Fetch images from Vercel Blob storage
+  const { blobs } = await list();
 
-  try {
-    // Runtime call – the SDK reads BLOB_READ_WRITE_TOKEN from env automatically
-    const { blobs } = await list();
-    // Keep only common image extensions (adjust as needed)
-    images = blobs.filter(b =>
-      /\.(png|jpe?g|webp|gif|bmp|tiff)$/i.test(b.pathname)
-    );
-  } catch (err) {
-    // If you still hit "No token found", see the debug notes below
-    console.error("Failed to list blobs:", err);
-  }
+  // Filter for only image files (optional)
+  const images = blobs; // or blobs.filter(b => /\.(png|jpe?g|webp|gif|bmp|tiff)$/i.test(b.pathname));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
@@ -30,8 +22,7 @@ export default async function Gallery() {
           <h1 className="text-3xl font-bold text-indigo-700">Image Gallery</h1>
           <Link
             href="/"
-            className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition-colors"
-         shadow-lg">
+            className="py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow transition-colorsrounded-xl shadow-lg">
             <p className="text-xl text-gray-600">
               No images found. Upload some images to get started!
             </p>
@@ -53,8 +44,6 @@ export default async function Gallery() {
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
-                    // Optional: unoptimized for non-photo formats / SVG
-                    // unoptimized
                   />
                 </div>
                 <div className="p-4">
