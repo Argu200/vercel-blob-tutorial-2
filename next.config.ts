@@ -1,16 +1,20 @@
+
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'flzmxvjdqes9inmy.public.blob.vercel-storage.com',
-        port: '',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "**.blob.vercel-storage.com",
+        pathname: "/**",
       },
     ],
+    // If you know you'll serve SVGs and want <Image/> to load them:
+    // dangerouslyAllowSVG: true,
+    // contentSecurityPolicy:
+    //   "default-src 'self'; script-src 'none'; sandbox; style-src 'unsafe-inline'",
   },
 };
 
